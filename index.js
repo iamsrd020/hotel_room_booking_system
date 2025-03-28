@@ -100,4 +100,20 @@ app.get("/guests", (req, res) => {
   });
 });
 
+// Cancel Room Booking
+app.delete("/cancel/:email", (req, res) => {
+  const { email } = req.params;
+  const index = bookings.findIndex((b) => b.email === email);
+
+  if (index === -1) {
+    return res.status(404).json({ message: "Booking not found ❌❌👎" });
+  }
+
+  const [removedBooking] = bookings.splice(index, 1);
+
+  res.json({
+    message: "Booking Cancelled 🟢🟢, always at your Service, Have a Nice Day 💝",
+    removedBooking,
+  });
+});
 app.listen(3000, () => console.log("Server running on port 3000 🚀🚀"));
