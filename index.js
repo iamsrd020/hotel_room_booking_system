@@ -5,38 +5,39 @@ const { v4: uuidv4 } = require("uuid");
 const app = express();
 app.use(bodyParser.json());
 
-let rooms = Array.from({ length: 10 }, (_, i) => ({
+let rooms = Array.from({ length: 20 }, (_, i) => ({
   roomNumber: i + 1,
 }));
 
 let bookings = [];
 
-// Book a Room
+// Book a Room with User-selected Room Option
 app.post("/booking", (req, res) => {
-  const { name, email, checkIn, checkOut } = req.body;
+  const { name, email, checkIn, checkOut, roomNumber } = req.body;
 
   // Check if the email already has an active booking
   const existingBooking = bookings.find((booking) => booking.email === email);
-
   if (existingBooking) {
     return res.status(400).json({
       message: `You already have a booking in Room ${existingBooking.roomNumber}. Your stay is from ${existingBooking.checkIn} to ${existingBooking.checkOut}.`,
     });
   }
 
-  // Check if there is any available room
-  const availableRoom = rooms.find((room) => {
-    // Find a room that is either not booked or has been vacated
-    const isRoomOccupied = bookings.some(
-      (booking) =>
-        booking.roomNumber === room.roomNumber && booking.checkOut >= checkIn
-    );
-    return !isRoomOccupied;
-  });
+  // Validate if the selected room exists
+  const selectedRoom = rooms.find((room) => room.roomNumber === roomNumber);
+  if (!selectedRoom) {
+    return res.status(400).json({ message: "Invalid room number selected." });
+  }
 
-  if (!availableRoom) {
+  // Check if the selected room is available
+  const isRoomOccupied = bookings.some(
+    (booking) =>
+      booking.roomNumber === roomNumber && booking.checkOut >= checkIn
+  );
+
+  if (isRoomOccupied) {
     return res.status(400).json({
-      message: "All rooms are currently occupied. Please try again later.",
+      message: `Room ${roomNumber} is already booked. Please select another available room.`,
     });
   }
 
@@ -47,11 +48,10 @@ app.post("/booking", (req, res) => {
     email,
     checkIn,
     checkOut,
-    roomNumber: availableRoom.roomNumber,
+    roomNumber,
   };
 
   bookings.push(booking);
-
   res.status(201).json(booking);
 });
 
