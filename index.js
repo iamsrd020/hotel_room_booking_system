@@ -151,3 +151,15 @@ app.put("/modify/:email", (req, res) => {
 });
 
 app.listen(3000, () => console.log("Server running on port 3000 🚀🚀"));
+
+/**
+API EndPoints
+
+1) Booking a room : POST Method "http://localhost:3000/booking",
+2) Checking room avaliability : GET Method "http://localhost:3000/available-rooms",
+3) Viewing booking details by email : GET Method "http://localhost:3000/booking/:{email}",
+4) Viewing all guests : GET Method "http://localhost:3000/guests",
+5) Canceling a booking : DELETE Method "http://localhost:3000/cancel/:{email}",
+6) Modifying a booking : PUT Method "http://localhost:3000/modify/:{email}"
+
+**/
