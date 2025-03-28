@@ -88,4 +88,16 @@ app.get("/booking/:email", (req, res) => {
   });
 });
 
+// View All Guests
+app.get("/guests", (req, res) => {
+  if (bookings.length === 0) {
+    return res.status(404).json({ message: "No guests found ❌" });
+  }
+
+  res.json({
+    success: true,
+    guests: bookings.map(({ name, roomNumber }) => ({ name, roomNumber })),
+  });
+});
+
 app.listen(3000, () => console.log("Server running on port 3000 🚀🚀"));
