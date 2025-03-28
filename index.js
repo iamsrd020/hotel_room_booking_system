@@ -112,8 +112,42 @@ app.delete("/cancel/:email", (req, res) => {
   const [removedBooking] = bookings.splice(index, 1);
 
   res.json({
-    message: "Booking Cancelled 🟢🟢, always at your Service, Have a Nice Day 💝",
+    message:
+      "Booking Cancelled 🟢🟢, always at your Service, Have a Nice Day 💝",
     removedBooking,
   });
 });
+
+// Modify Booking
+app.put("/modify/:email", (req, res) => {
+  const { email } = req.params;
+  const { name, newEmail, checkIn, checkOut, roomNumber } = req.body;
+
+  const booking = bookings.find((b) => b.email === email);
+  if (!booking) {
+    return res.status(404).json({ message: "Booking not found ❌👎" });
+  }
+
+  let roomChangeWarning = "";
+
+  // Check if room number is being modified
+  if (roomNumber && roomNumber !== booking.roomNumber) {
+    roomChangeWarning =
+      "⚠️ Room change detected! Extra charges may be applicable.";
+  }
+
+  // Update the booking details if provided
+  if (name) booking.name = name;
+  if (newEmail) booking.email = newEmail;
+  if (checkIn) booking.checkIn = checkIn;
+  if (checkOut) booking.checkOut = checkOut;
+  if (roomNumber) booking.roomNumber = roomNumber;
+
+  res.json({
+    message: "Booking updated successfully ✅",
+    warning: roomChangeWarning,
+    updatedBooking: booking,
+  });
+});
+
 app.listen(3000, () => console.log("Server running on port 3000 🚀🚀"));
